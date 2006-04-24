@@ -1,0 +1,59 @@
+# $Id: Makefile.in,v 1.1.1.1 2006-04-24 20:24:03 hww3 Exp $
+@make_variables@
+VPATH=@srcdir@:@srcdir@/../..:../..
+
+# things we should define.
+
+# the .o files that we need to generate for the module
+# rules will automatically generate these from .c, .cmod, .m and .mmod files.
+#OBJS=sample.o
+
+# the module directory we put things into. it should be a directory path
+# of .pmod directories, and this must end with a trailing slash.
+MODDIR=Public.pmod/Image.pmod/
+
+# the module name the resulting dynamic and/or pike module will be 
+# installed as. note that it's just a module or class name without extension.
+MODNAME=SmugMug
+
+# the pike portion of the module. may be either a file or a directory
+# containing multiple .pike and .pmod files.
+MODULE_PMOD_IN=module.pmod.in
+
+# used by the module repository to scan for autodocs. should be the 
+# list of non pike files containing autodoc markup (ie cmod or c files). 
+AUTODOC_SRC_IN=
+
+# the module name note that there is no error checking, so all of these
+# related variables should agree.
+MODULE_NAME=Public.Image.SmugMug
+
+# the module name, with periods replaced with underscores. used to 
+# generate the module distribution.
+MODULE_DIR_NAME=Public_Image_SmugMug
+
+# need i say more?
+MODULE_LICENSE=GPL/LGPL/MPL
+
+# we shouldn't need to do anything to the rest of the file.
+
+CFLAGS=@CMOD_CFLAGS@
+LDFLAGS=@CMOD_LIBS@
+
+MODULE_LDFLAGS=@LDFLAGS@
+
+CONFIG_HEADERS=@CONFIG_HEADERS@
+
+@dynamic_module_makefile@
+@dependencies@
+
+release:
+	cvs rtag -D now RELEASE_1_${MIN} pike_modules/${MODULE_DIR_NAME}
+	cvs export -d ${MODULE_DIR_NAME}-1.${MIN} -r RELEASE_1_${MIN} pike_modules/${MODULE_DIR_NAME}
+	cd ${MODULE_DIR_NAME}-1.${MIN} && \
+	pike -x module --autoheader && pike -x module --autoconf && \
+	rm -rf autom4*
+	cp *.c ${MODULE_DIR_NAME}-1.${MIN}
+	gtar czvf ${MODULE_DIR_NAME}-1.${MIN}.tar.gz  ${MODULE_DIR_NAME}-1.${MIN}
+	pike upload_module_version.pike ${MODULE_NAME} 1.${MIN} "${MODULE_LICENSE}"
+

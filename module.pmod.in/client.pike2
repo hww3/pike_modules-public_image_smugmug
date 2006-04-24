@@ -1,0 +1,210 @@
+import Public.Image.SmugMug;
+
+string version = "1.1.0";
+string apikey;
+string sessionid;
+object xmlrpc;
+object beta_xmlrpc;
+
+//!
+static void create(string api_key, int|void use_secure)
+{
+  apikey = api_key;
+  string url = "http" + (use_secure?"s":"") + "://" + XMLRPC_URL;
+  xmlrpc = Protocols.XMLRPC.Client(url);  
+  url = "http" + (use_secure?"s":"") + "://" + BETA_URL;
+  beta_xmlrpc = Protocols.XMLRPC.Client(url);  
+}
+
+//!
+void login(string email, string password)
+{
+  if(sessionid)
+    throw(Error.Generic("SmugMug: already logged in.\n"));
+  mixed res = 
+  xmlrpc["smugmug.login.withPassword"](email, password, version, apikey);
+
+  if(objectp(res))
+    throw(Error.Generic("SmugMug error: " + res->fault_string + "\n"));
+  else
+  {
+    sessionid = res[0]["SessionID"];
+  }
+}
+
+//!
+void login_anon()
+{
+  if(sessionid)
+    throw(Error.Generic("SmugMug: already logged in.\n"));
+  mixed res = 
+  xmlrpc["smugmug.login.anonymously"](version, apikey);
+
+  if(objectp(res))
+    throw(Error.Generic("SmugMug error: " + res->fault_string + "\n"));
+  else
+  {
+    sessionid = res[0]["SessionID"];
+  }
+}
+
+//!
+void logout()
+{
+  if(!sessionid)
+    throw(Error.Generic("SmugMug: not logged in.\n"));
+
+  mixed res = 
+  xmlrpc["smugmug.logout"](sessionid);
+
+  if(objectp(res))
+    throw(Error.Generic("SmugMug error: " + res->fault_string + "\n"));
+  else
+  {
+    sessionid = 0;
+  }
+
+}
+
+string account_type()
+{
+  if(!sessionid)
+    throw(Error.Generic("SmugMug: not logged in.\n"));
+
+  mixed res = 
+  xmlrpc["smugmug.accounts.getType"](sessionid);
+
+  if(objectp(res))
+    throw(Error.Generic("SmugMug error: " + res->fault_string + "\n"));
+  else
+  {
+    return res[0]->AccountType;
+  }
+}
+
+array get_tree(string|void nickname, int|void heavy)
+{
+  if(!sessionid)
+    throw(Error.Generic("SmugMug: not logged in.\n"));
+
+  array args = ({ sessionid });
+
+  if(nickname)
+  {
+    args += ({nickname});
+
+    if(heavy) args += ({heavy});
+  }
+
+  mixed res = 
+  beta_xmlrpc["smugmug.users.getTree"](@args);
+
+  if(objectp(res))
+    throw(Error.Generic("SmugMug error: " + res->fault_string + "\n"));
+  else
+  {
+    return res[0];
+  }
+}
+
+
+array get_transfer_stats(int month, int year)
+{
+  if(!sessionid)
+    throw(Error.Generic("SmugMug: not logged in.\n"));
+
+  mixed res = 
+  beta_xmlrpc["smugmug.users.getTransferStats"](sessionid, month, year);
+
+  if(objectp(res))
+    throw(Error.Generic("SmugMug error: " + res->fault_string + "\n"));
+  else
+  {
+    return res[0];
+  }
+}
+
+
+
+array get_albums(string|void nickname, int|void heavy)
+{
+  if(!sessionid)
+    throw(Error.Generic("SmugMug: not logged in.\n"));
+
+  array args = ({});
+
+  if(nickname) args += ({ nickname });
+  if(heavy) {
+    args += ({ heavy });
+    x = beta_xmlrpc;
+  }
+  else
+  {
+    x = xmlrpc;
+  }
+  mixed res = 
+  x["smugmug.albums.get"](sessionid, @args);
+
+
+  if(objectp(res))
+    throw(Error.Generic("SmugMug error: " + res->fault_string + "\n"));
+  else
+  {
+    return res[0];
+  }
+}
+
+array get_album_info(int albumid)
+{
+  if(!sessionid)
+    throw(Error.Generic("SmugMug: not logged in.\n"));
+
+  mixed res = 
+  xmlrpc["smugmug.albums.getInfo"](sessionid, albumid);
+
+  if(objectp(res))
+    throw(Error.Generic("SmugMug error: " + res->fault_string + "\n"));
+  else
+  {
+    return res[0];
+  }
+}
+
+int new_album(string title, int category, void|mapping options)
+{
+  
+  if(!sessionid)
+    throw(Error.Generic("SmugMug: not logged in.\n"));
+
+  mixed res;
+
+  if(!options)
+    res = 
+    xmlrpc["smugmug.albums.create"](sessionid, title, category);
+  else
+    res = 
+    xmlrpc["smugmug.albums.create"](sessionid, title, category, options);
+
+  if(objectp(res))
+    throw(Error.Generic("SmugMug error: " + res->fault_string + "\n"));
+  else
+  {
+    return res[0];
+  }
+}
+
+int delete(int albumid)
+{
+  if(!sessionid)
+    throw(Error.Generic("SmugMug: not logged in.\n"));
+
+  mixed res = 
+  xmlrpc["smugmug.albums.delete"](sessionid, albumid);
+
+  if(objectp(res))
+    throw(Error.Generic("SmugMug error: " + res->fault_string + "\n"));
+  else
+  {
+    return (res[0]=="SUCCESS"?1:0);
+  }
+}

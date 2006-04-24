@@ -1,0 +1,25 @@
+# $Id: configure.in,v 1.1.1.1 2006-04-24 20:24:03 hww3 Exp $
+AC_INIT(testsuite.in)
+
+AC_MODULE_INIT()
+AC_CONFIG_HEADERS(sample_config.h)
+
+# PKG_CHECK_MODULES(XML2, libxml-2.0)
+# PKG_CHECK_MODULES(XSLT, libxslt)
+
+# CPPFLAGS="${CPPFLAGS} ${XML2_CFLAGS} ${XSLT_CFLAGS}"
+# LDFLAGS="${LDFLAGS} ${XML2_LIBS} ${XSLT_LIBS}"
+
+CMOD_LIBS=""
+CMOD_FLAGS=""
+
+# AC_CHECK_HEADERS(libxml/parser.h)
+# AC_CHECK_LIB(xml2, xmlCleanupParser) 
+
+# AC_CHECK_FUNCS(xmlNewDocPI) 
+
+AC_SUBST(CMOD_CFLAGS) 
+AC_SUBST(CMOD_LIBS)
+
+AC_OUTPUT(Makefile)
+
