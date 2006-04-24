@@ -652,13 +652,28 @@ int upload_image(int albumid, string data, string|void filename,
 }
 
 
+array search(string query)
+{
+   string q = "http://www.smugmug.com/hack/feed.mg?Type=search&Data=" + query + "&format=rss200";
 
+   string r = Protocols.HTTP.get_url_data(q);
 
+   if(!r) return ({});
 
+   object d = Public.Web.RSS.parse(r);
+   array res = ({});
+
+   foreach(d->items;; object item)
+   {
+      res+=({item->data->guid[0]});
+   }
+ 
+   return res;
+}
 
 //! Similar to @[get_url], except that query variables is sent as a
 //! POST request instead of a GET request.
-Protocols.HTTP.Query post_url_mp(string|Standards.URI url,
+static Protocols.HTTP.Query post_url_mp(string|Standards.URI url,
                 mapping(string:int|string) query_variables,
                 void|mapping(string:string|array(string)) request_headers,
                 void|Protocols.HTTP.Query con)
@@ -669,7 +684,6 @@ Protocols.HTTP.Query post_url_mp(string|Standards.URI url,
   foreach(query_variables;string key;string|mapping value)
   {
 
-werror("adding new object for field.\n");
      object m = MIME.Message();
      m->setdisp_param("name", key);
 
@@ -711,7 +725,7 @@ werror("adding new object for field.\n");
 
 //! Similar to @[get_url_nice], except that query variables is sent as
 //! a POST request instead of a GET request.
-array(string) post_url_nice_mp(string|Standards.URI url,
+static array(string) post_url_nice_mp(string|Standards.URI url,
                             mapping(string:int|string) query_variables,
                             void|mapping(string:string|array(string)) request_headers,
                             void|Protocols.HTTP.Query con)
@@ -722,7 +736,7 @@ array(string) post_url_nice_mp(string|Standards.URI url,
 
 //! Similar to @[get_url_data], except that query variables is sent as
 //! a POST request instead of a GET request.
-string post_url_data_mp(string|Standards.URI url,
+static string post_url_data_mp(string|Standards.URI url,
                      mapping(string:int|string) query_variables,
                      void|mapping request_headers,
                      void|Protocols.HTTP.Query con)
