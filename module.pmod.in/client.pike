@@ -666,7 +666,9 @@ array search(string query)
    foreach(d->items;; object item)
    {
       res+=({ (["ImageID": ((item->data->link/"/") [-1]),
-                "thumbnail": item->data->guid[0] ])});
+                "thumbnail": item->data->guid[0],
+                "link": item->data->link,
+                "title": item->data->title ])});
    }
  
    return res;
