@@ -654,6 +654,7 @@ int upload_image(int albumid, string data, string|void filename,
 
 array search(string query)
 {
+#if constant(Public.Web.RSS)
    string q = "http://www.smugmug.com/hack/feed.mg?Type=search&Data=" + query + "&format=rss200";
 
    string r = Protocols.HTTP.get_url_data(q);
@@ -670,6 +671,10 @@ array search(string query)
                 "link": item->data->link,
                 "title": item->data->title ])});
    }
+
+#else
+  array res = ({});
+#endif
  
    return res;
 }

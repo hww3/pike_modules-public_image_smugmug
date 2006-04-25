@@ -1,0 +1,2 @@
+- more error checking for certain methods (like modify album, which takes 
+a set of arguments that we currently pass blindly to SmugMug.)

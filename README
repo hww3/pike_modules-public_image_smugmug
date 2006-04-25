@@ -1,0 +1,12 @@
+This module provides an interface to SmugMug image galleries.
+
+All functionality provided by the SmugMug API is represented by this 
+module. Also available is a wrapper around the smugmug search 
+functionality for searching for images that contain particular keywords.
+
+The search functionality requires Public.Web.RSS, and will return empty 
+result sets if this module is not installed.
+
+Also, note that a SmugMug API key is required to use this module (except 
+for the search functionality, which works independently of the rest of the 
+module's functions.
