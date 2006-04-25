@@ -665,7 +665,8 @@ array search(string query)
 
    foreach(d->items;; object item)
    {
-      res+=({item->data->guid[0]});
+      res+=({ (["ImageID": ((item->data->link/"/") [-1]),
+                "thumbnail": item->data->guid[0] ])});
    }
  
    return res;
@@ -722,7 +723,7 @@ static Protocols.HTTP.Query post_url_mp(string|Standards.URI url,
                    con,
                    data);
 }
-
+	
 //! Similar to @[get_url_nice], except that query variables is sent as
 //! a POST request instead of a GET request.
 static array(string) post_url_nice_mp(string|Standards.URI url,
@@ -745,4 +746,3 @@ static string post_url_data_mp(string|Standards.URI url,
   Protocols.HTTP.Query z = post_url_mp(url, query_variables, request_headers, con);
   return z && z->data();
 }
-
