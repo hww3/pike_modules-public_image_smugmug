@@ -1,0 +1,4 @@
+Version 1.0
+
+Initial release of module; all SmugMug API calls are included,
+along with upload via POST.
