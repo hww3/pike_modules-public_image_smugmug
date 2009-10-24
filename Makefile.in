@@ -16,10 +16,6 @@ MODDIR=Public.pmod/Image.pmod/
 # installed as. note that it's just a module or class name without extension.
 MODNAME=SmugMug
 
-# the pike portion of the module. may be either a file or a directory
-# containing multiple .pike and .pmod files.
-MODULE_PMOD_IN=module.pmod.in
-
 # used by the module repository to scan for autodocs. should be the 
 # list of non pike files containing autodoc markup (ie cmod or c files). 
 AUTODOC_SRC_IN=
